@@ -1,0 +1,204 @@
+<html>
+
+<head>
+  <title>Sound Bar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+  <script>
+    class SoundController {
+      constructor() {
+        this.context = null;
+        this.snd = null;
+        this.gainNode = null;
+        this.baseFrequency = 100; // 最低周波数の初期値
+        this.frequencyStep = Math.floor(document.body.clientHeight / 100) * 100; // ボタン押下時に周波数を動かす幅
+        this.createUI();
+        this.createFrequencyDisplay();
+      }
+
+      // 音を再生
+      playSin(freq) {
+        if (!this.context) this.context = new AudioContext();
+        if (!this.snd) this.snd = this.context.createOscillator();
+        if (!this.gainNode) this.gainNode = this.context.createGain();
+
+        this.snd.type = "sine";
+        this.snd.frequency.value = freq;
+
+        this.snd.connect(this.gainNode);
+        this.gainNode.connect(this.context.destination);
+
+        this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
+
+        this.snd.start();
+      }
+
+      // 音を停止
+      stopSin() {
+        if (this.snd && this.context) {
+          this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.1);
+          setTimeout(() => {
+            this.snd.stop();
+            this.snd.disconnect();
+            this.snd = null;
+          }, 100);
+        }
+      }
+
+      // 周波数表示のためのUI作成
+      createFrequencyDisplay() {
+        this.freqDisplay = document.createElement('div');
+        this.freqDisplay.style.position = "absolute";
+        this.freqDisplay.style.color = "#FFF";
+        this.freqDisplay.style.fontSize = "1.5em";
+        this.freqDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        this.freqDisplay.style.padding = "0.5em";
+        this.freqDisplay.style.borderRadius = "0.5em";
+        this.freqDisplay.style.visibility = "hidden";  // 最初は非表示
+        document.body.appendChild(this.freqDisplay);
+      }
+
+      // UIを作成
+      createUI() {
+        // スクロールを無効化
+        document.body.style.overflow = "hidden";
+
+        // 音のスライダー
+        const soundSlider = document.createElement('div');
+        soundSlider.style.width = "2em";
+        soundSlider.style.height = "100vh";
+        soundSlider.style.background = "#333";
+
+        soundSlider.addEventListener("touchstart", (e) => {
+          const y = e.touches[0].pageY;
+          this.playSin(this.baseFrequency + y);
+          this.updateFrequencyDisplay(e.touches[0].pageX, e.touches[0].pageY, this.baseFrequency + y);
+        });
+
+        soundSlider.addEventListener("touchmove", (e) => {
+          const y = e.touches[0].pageY;
+          if (this.snd) {
+            this.snd.frequency.value = this.baseFrequency + y;
+            this.updateFrequencyDisplay(e.touches[0].pageX, e.touches[0].pageY, this.baseFrequency + y);
+          }
+        });
+
+        soundSlider.addEventListener("touchend", () => {
+          this.stopSin();
+          this.freqDisplay.style.visibility = "hidden";  // タッチ終了時に非表示
+        });
+
+        document.body.append(soundSlider);
+
+        // 最低周波数を調整するUIを画面右側に配置
+        const controlContainer = document.createElement('div');
+        controlContainer.style.position = "fixed";
+        controlContainer.style.top = "50%";
+        controlContainer.style.right = "1em";
+        controlContainer.style.transform = "translateY(-50%)";
+        controlContainer.style.display = "flex";
+        controlContainer.style.flexDirection = "column";
+        controlContainer.style.alignItems = "center";
+        controlContainer.style.backgroundColor = "#333";
+        controlContainer.style.color = "#FFF";
+        controlContainer.style.padding = "1em";
+        controlContainer.style.borderRadius = "1em";
+
+        // 最低周波数の表示と入力欄
+        const freqLabel = document.createElement('label');
+        freqLabel.innerText = "Base Freq ";
+        controlContainer.appendChild(freqLabel);
+
+        const freqInput = document.createElement('input');
+        freqInput.type = "number";
+        freqInput.value = this.baseFrequency;
+        freqInput.style.width = "6em";
+        freqInput.style.padding = "0.5em";
+        freqInput.style.margin = "0.5em";
+        freqInput.style.fontSize = "1.2em";
+        freqInput.style.borderRadius = "0.5em";
+        freqInput.style.border = "none";
+        freqInput.style.textAlign = "center";
+        freqInput.addEventListener("input", (e) => {
+          this.baseFrequency = parseInt(e.target.value) || 200;
+        });
+        controlContainer.appendChild(freqInput);
+
+        // 増減ボタンを横並びに配置
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = "flex"; // 横並びにするためにflexを使用
+        buttonContainer.style.gap = "1em"; // ボタン間の隙間を設定
+
+        // プラスボタン
+        const increaseButton = document.createElement('button');
+        increaseButton.innerText = "+";
+        increaseButton.style.padding = "1em 1.5em";
+        increaseButton.style.fontSize = "1.5em";
+        increaseButton.style.backgroundColor = "#4CAF50";
+        increaseButton.style.color = "#FFF";
+        increaseButton.style.border = "none";
+        increaseButton.style.borderRadius = "1em";
+        increaseButton.style.cursor = "pointer";
+        increaseButton.style.transition = "all 0.3s ease";
+        increaseButton.addEventListener("click", () => {
+          this.baseFrequency += this.frequencyStep;
+          freqInput.value = this.baseFrequency;
+        });
+        increaseButton.addEventListener("mouseenter", () => {
+          increaseButton.style.backgroundColor = "#45a049"; // ホバー時の色変更
+        });
+        increaseButton.addEventListener("mouseleave", () => {
+          increaseButton.style.backgroundColor = "#4CAF50"; // 通常時に戻す
+        });
+        buttonContainer.appendChild(increaseButton);
+
+        // マイナスボタン
+        const decreaseButton = document.createElement('button');
+        decreaseButton.innerText = "-";
+        decreaseButton.style.padding = "1em 1.5em";
+        decreaseButton.style.fontSize = "1.5em";
+        decreaseButton.style.backgroundColor = "#FF6347";
+        decreaseButton.style.color = "#FFF";
+        decreaseButton.style.border = "none";
+        decreaseButton.style.borderRadius = "1em";
+        decreaseButton.style.cursor = "pointer";
+        decreaseButton.style.transition = "all 0.3s ease";
+        decreaseButton.addEventListener("click", () => {
+          this.baseFrequency = Math.max(0, this.baseFrequency - this.frequencyStep);
+          freqInput.value = this.baseFrequency;
+        });
+        decreaseButton.addEventListener("mouseenter", () => {
+          decreaseButton.style.backgroundColor = "#e55347"; // ホバー時の色変更
+        });
+        decreaseButton.addEventListener("mouseleave", () => {
+          decreaseButton.style.backgroundColor = "#FF6347"; // 通常時に戻す
+        });
+        buttonContainer.appendChild(decreaseButton);
+
+        controlContainer.appendChild(buttonContainer);
+        document.body.append(controlContainer);
+      }
+
+      // 周波数表示を更新
+      updateFrequencyDisplay(x, y, freq) {
+        this.freqDisplay.style.left = `${x + 10}px`;  // x位置を少し右にずらす
+        this.freqDisplay.style.top = `${y + 10}px`;   // y位置を少し下にずらす
+        this.freqDisplay.innerText = `Freq: ${freq.toFixed(0)} Hz`;
+        this.freqDisplay.style.visibility = "visible"; // 表示
+      }
+    }
+
+    // body 初期化
+    document.body.style.background = "#CCC";
+    document.body.style.touchAction = "pan-x pan-y";
+    document.body.style.fontSize = "4vw";
+    document.body.style.margin = document.body.style.padding = "0";
+
+    // インスタンスを作成して実行
+    const soundController = new SoundController();
+  </script>
+</body>
+
+</html>
