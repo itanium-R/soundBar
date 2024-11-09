@@ -10,7 +10,7 @@
     class SoundController {
       constructor() {
         this.context = null;
-        this.snd = null;
+        this.snds = [];
         this.gainNode = null;
         this.baseFrequency = 100; // 最低周波数の初期値
         this.frequencyStep = Math.floor(document.body.clientHeight / 200) * 100; // ボタン押下時に周波数を動かす幅
@@ -21,8 +21,10 @@
       // 音を再生
       playSin(freq) {
         if (!this.context) this.context = new AudioContext();
-        if (!this.snd) this.snd = this.context.createOscillator();
-        if (!this.gainNode) this.gainNode = this.context.createGain();
+        if (!this.snd) {
+          this.snd = this.context.createOscillator();
+          this.gainNode = this.context.createGain();
+        }
 
         this.snd.type = "sine";
         this.snd.frequency.value = freq;
@@ -38,10 +40,13 @@
       // 音を停止
       stopSin() {
         if (this.snd && this.context) {
-          this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.1);
-          this.snd.stop();
-          this.snd.disconnect();
+          this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.2);
+          const removedSnd = this.snd;
           this.snd = null;
+          setTimeout(() => {
+            removedSnd.stop();
+            removedSnd.disconnect();
+          }, 200);
         }
       }
 
