@@ -56,9 +56,11 @@
         this.freqDisplay.style.position = "absolute";
         this.freqDisplay.style.color = "#FFF";
         this.freqDisplay.style.fontSize = "1.5em";
+        this.freqDisplay.style.lineHeight = "2em";
         this.freqDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
         this.freqDisplay.style.padding = "0.5em";
         this.freqDisplay.style.borderRadius = "0.5em";
+        this.freqDisplay.style.transform = "translateY(-1.5em)"
         this.freqDisplay.style.visibility = "hidden";  // 最初は非表示
         document.body.appendChild(this.freqDisplay);
       }
@@ -70,8 +72,9 @@
 
         // 音のスライダー
         const soundSlider = document.createElement('div');
-        soundSlider.style.width = "2em";
+        soundSlider.style.width = "3.5em";
         soundSlider.style.height = "100vh";
+        soundSlider.style.marginLeft = "2em";
         soundSlider.style.background = "#333";
 
         soundSlider.addEventListener("touchstart", (e) => {
@@ -131,8 +134,9 @@
 
         // 増減ボタンを横並びに配置
         const buttonContainer = document.createElement('div');
-        buttonContainer.style.display = "flex"; // 横並びにするためにflexを使用
-        buttonContainer.style.gap = "1em"; // ボタン間の隙間を設定
+        buttonContainer.style.display = "flex";
+        buttonContainer.style.flexDirection = "column";
+        buttonContainer.style.gap = "1em";
 
         // プラスボタン
         const increaseButton = document.createElement('button');
@@ -186,8 +190,8 @@
 
       // 周波数表示を更新
       updateFrequencyDisplay(x, y, freq) {
-        this.freqDisplay.style.left = `${x + 10}px`;  // x位置を少し右にずらす
-        this.freqDisplay.style.top = `${y + 10}px`;   // y位置を少し下にずらす
+        this.freqDisplay.style.left = `6rem`;  // x位置はSoundBarの右側
+        this.freqDisplay.style.top = `${y}px`;        // y位置は指の位置
         this.freqDisplay.innerText = `Freq: ${freq.toFixed(0)} Hz`;
         this.freqDisplay.style.visibility = "visible"; // 表示
       }
