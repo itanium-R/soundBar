@@ -13,7 +13,7 @@
         this.snds = [];
         this.gainNode = null;
         this.baseFrequency = 100; // 最低周波数の初期値
-        this.frequencyStep = Math.floor(document.body.clientHeight / 200) * 100; // ボタン押下時に周波数を動かす幅
+        this.frequencyStep = Math.max(Math.floor(document.body.clientHeight / 200) * 100, 100); // ボタン押下時に周波数を動かす幅
         this.createUI();
         this.createFrequencyDisplay();
       }
