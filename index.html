@@ -39,11 +39,9 @@
       stopSin() {
         if (this.snd && this.context) {
           this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.1);
-          setTimeout(() => {
-            this.snd.stop();
-            this.snd.disconnect();
-            this.snd = null;
-          }, 100);
+          this.snd.stop();
+          this.snd.disconnect();
+          this.snd = null;
         }
       }
 
