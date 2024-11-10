@@ -200,8 +200,16 @@
     // body 初期化
     document.body.style.background = "#CCC";
     document.body.style.touchAction = "pan-x pan-y";
-    document.body.style.fontSize = "4vw";
-    document.body.style.margin = document.body.style.padding = "0";
+    document.body.style.width = "100vw";
+    document.body.style.height = "100vh";
+    document.body.style.transition = "font-size 0.3s ease-out";
+    const adjustFontSize = () => {
+      const isBodyPortrait = document.body.clientHeight > document.body.clientWidth;
+      document.body.style.fontSize = isBodyPortrait ? "4vw" : "3vh";
+      document.body.style.margin = document.body.style.padding = "0";
+    }
+    adjustFontSize();
+    window.addEventListener("orientationchange", () => { setTimeout(adjustFontSize, 100) });
 
     // インスタンスを作成して実行
     const soundController = new SoundController();
