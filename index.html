@@ -9,7 +9,7 @@
   <script>
     class SoundController {
       constructor() {
-        this.context = null;
+        this.context = new AudioContext();
         this.snds = [];
         this.gainNode = null;
         this.baseFrequency = 100; // 最低周波数の初期値
@@ -31,33 +31,30 @@
 
       // 音を再生
       playSin(freq) {
-        if (!this.context) this.context = new AudioContext();
-        if (!this.snd) {
-          this.snd = this.context.createOscillator();
-          this.gainNode = this.context.createGain();
-        }
-
+        if (this.snd) return;
+        this.snd = this.context.createOscillator();
         this.snd.type = "sine";
         this.snd.frequency.value = freq;
 
-        this.snd.connect(this.gainNode);
+        this.gainNode = this.context.createGain();
+        this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
         this.gainNode.connect(this.context.destination);
 
-        this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
-
+        this.snd.connect(this.gainNode);
         this.snd.start();
       }
 
       // 音を停止
       stopSin() {
         if (this.snd && this.context) {
-          this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.2);
+          this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
+          this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.3);
           const removedSnd = this.snd;
           this.snd = null;
           setTimeout(() => {
             removedSnd.stop();
             removedSnd.disconnect();
-          }, 200);
+          }, 300);
         }
       }
 
@@ -87,7 +84,7 @@
         overlay.style.justifyContent = 'center';
         overlay.style.color = 'white';
         overlay.style.fontSize = '24px';
-        overlay.style.transition = 'opacity 2s ease'; // フェードアウトのためのトランジション
+        overlay.style.transition = 'opacity 1s ease-out'; // フェードアウトのためのトランジション
         overlay.style.opacity = '1'; // 初期状態では表示
         overlay.style.zIndex = '1000';
 
