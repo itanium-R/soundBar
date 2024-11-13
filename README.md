@@ -8,7 +8,7 @@
 
 ## DEMO
 
-https://itanium-r.github.io/soundBar/
+https://itanium-r.github.io/soundSlider/
 
 タッチ画面をもつデバイスで表示すると演奏いただけます。
 また、検証者モードよりスマホやタブレットなどのデバイスのモードにしていただきますと、マウスでも演奏いただけます。
