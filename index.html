@@ -189,29 +189,6 @@
         buttonContainer.style.flexDirection = "column";
         buttonContainer.style.gap = "1em";
 
-        // プラスボタン
-        const increaseButton = document.createElement('button');
-        increaseButton.innerText = "+";
-        increaseButton.style.padding = "1em 1.5em";
-        increaseButton.style.fontSize = "1.5em";
-        increaseButton.style.backgroundColor = "#4CAF50";
-        increaseButton.style.color = "#FFF";
-        increaseButton.style.border = "none";
-        increaseButton.style.borderRadius = "1em";
-        increaseButton.style.cursor = "pointer";
-        increaseButton.style.transition = "all 0.3s ease";
-        increaseButton.addEventListener("click", () => {
-          this.baseFrequency += this.frequencyStep;
-          freqInput.value = this.baseFrequency;
-        });
-        increaseButton.addEventListener("mouseenter", () => {
-          increaseButton.style.backgroundColor = "#45a049"; // ホバー時の色変更
-        });
-        increaseButton.addEventListener("mouseleave", () => {
-          increaseButton.style.backgroundColor = "#4CAF50"; // 通常時に戻す
-        });
-        buttonContainer.appendChild(increaseButton);
-
         // マイナスボタン
         const decreaseButton = document.createElement('button');
         decreaseButton.innerText = "-";
@@ -234,6 +211,29 @@
           decreaseButton.style.backgroundColor = "#FF6347"; // 通常時に戻す
         });
         buttonContainer.appendChild(decreaseButton);
+
+        // プラスボタン
+        const increaseButton = document.createElement('button');
+        increaseButton.innerText = "+";
+        increaseButton.style.padding = "1em 1.5em";
+        increaseButton.style.fontSize = "1.5em";
+        increaseButton.style.backgroundColor = "#4CAF50";
+        increaseButton.style.color = "#FFF";
+        increaseButton.style.border = "none";
+        increaseButton.style.borderRadius = "1em";
+        increaseButton.style.cursor = "pointer";
+        increaseButton.style.transition = "all 0.3s ease";
+        increaseButton.addEventListener("click", () => {
+          this.baseFrequency += this.frequencyStep;
+          freqInput.value = this.baseFrequency;
+        });
+        increaseButton.addEventListener("mouseenter", () => {
+          increaseButton.style.backgroundColor = "#45a049"; // ホバー時の色変更
+        });
+        increaseButton.addEventListener("mouseleave", () => {
+          increaseButton.style.backgroundColor = "#4CAF50"; // 通常時に戻す
+        });
+        buttonContainer.appendChild(increaseButton);
 
         controlContainer.appendChild(buttonContainer);
         document.body.append(controlContainer);
