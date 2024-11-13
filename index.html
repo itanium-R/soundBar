@@ -12,6 +12,8 @@
         this.context = new AudioContext();
         this.snds = [];
         this.gainNode = null;
+        this.selectableWaveformTypes = ["sine", "square", "sawtooth", "triangle"];
+        this.waveformType = "sine"; // 初期値はサイン波
         this.baseFrequency = 100; // 最低周波数の初期値
         this.frequencyStep = Math.max(Math.floor(document.body.clientHeight / 200) * 100, 100); // ボタン押下時に周波数を動かす幅
         this.createUI();
@@ -33,7 +35,7 @@
       playSin(freq) {
         if (this.snd) return;
         this.snd = this.context.createOscillator();
-        this.snd.type = "sine";
+        this.snd.type = this.waveformType;
         this.snd.frequency.value = freq;
 
         this.gainNode = this.context.createGain();
@@ -180,21 +182,44 @@
         });
         controlContainer.appendChild(freqInput);
 
-        // 増減ボタンを横並びに配置
+        // 波形選択用のドロップダウンメニュー
+        const waveformLabel = document.createElement('label');
+        waveformLabel.innerText = "Waveform ";
+        controlContainer.appendChild(waveformLabel);
+
+        const waveformSelect = document.createElement('select');
+        this.selectableWaveformTypes.forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.text = type.charAt(0).toUpperCase() + type.slice(1);
+          waveformSelect.appendChild(option);
+        });
+        waveformSelect.style.width = "6em";
+        waveformSelect.style.padding = "0.5em";
+        waveformSelect.style.margin = "0.5em";
+        waveformSelect.style.fontSize = "1.2em";
+        waveformSelect.style.borderRadius = "0.5em";
+        waveformSelect.addEventListener("change", (e) => {
+          this.waveformType = e.target.value;  // 選択した波形を適用
+        });
+        controlContainer.appendChild(waveformSelect);
+
+        // 増減ボタンWrapper
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = "flex";
         buttonContainer.style.flexDirection = "column";
         buttonContainer.style.gap = "1em";
+        buttonContainer.style.marginTop = "1em";
 
         // マイナスボタン
         const decreaseButton = document.createElement('button');
-        decreaseButton.innerText = "-";
-        decreaseButton.style.padding = "1em 1.5em";
-        decreaseButton.style.fontSize = "1.5em";
+        decreaseButton.innerText = "−";
+        decreaseButton.style.padding = ".2em 1em";
+        decreaseButton.style.fontSize = "3em";
         decreaseButton.style.backgroundColor = "#FF6347";
         decreaseButton.style.color = "#FFF";
         decreaseButton.style.border = "none";
-        decreaseButton.style.borderRadius = "1em";
+        decreaseButton.style.borderRadius = "0.5em";
         decreaseButton.style.cursor = "pointer";
         decreaseButton.style.transition = "all 0.3s ease";
         decreaseButton.addEventListener("click", () => {
@@ -212,12 +237,12 @@
         // プラスボタン
         const increaseButton = document.createElement('button');
         increaseButton.innerText = "+";
-        increaseButton.style.padding = "1em 1.5em";
-        increaseButton.style.fontSize = "1.5em";
+        increaseButton.style.padding = ".2em 1em";
+        increaseButton.style.fontSize = "3em";
         increaseButton.style.backgroundColor = "#4CAF50";
         increaseButton.style.color = "#FFF";
         increaseButton.style.border = "none";
-        increaseButton.style.borderRadius = "1em";
+        increaseButton.style.borderRadius = "0.5em";
         increaseButton.style.cursor = "pointer";
         increaseButton.style.transition = "all 0.3s ease";
         increaseButton.addEventListener("click", () => {
