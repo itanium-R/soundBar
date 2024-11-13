@@ -1,4 +1,4 @@
-# soundBar
+# soundSlider
 
 
 ## これはなに？
